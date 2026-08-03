@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Test cache
+.pytest_cache/
+
+# Virtual environments
+venv/
+.env
+
+# Logs
+*.log
+
+# Backup files
+*.save
+*.bak
+*~
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary uploads
+uploads/
+tmp/
+
+# Test images
+tests/invoices/*.jpg
+tests/invoices/*.jpeg
+tests/invoices/*.png
