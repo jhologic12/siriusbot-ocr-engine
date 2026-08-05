@@ -18,6 +18,8 @@ ALLOWED_IMAGE_EXTENSIONS = {
     ".jpg",
     ".jpeg",
     ".png",
+    ".tiff",
+    ".bmp",
     ".webp",
 }
 
@@ -25,5 +27,7 @@ ALLOWED_IMAGE_EXTENSIONS = {
 ALLOWED_IMAGE_MIME_TYPES = {
     "image/jpeg",
     "image/png",
+    "image/tiff",
+    "image/bmp",
     "image/webp",
 }
