@@ -3,5 +3,6 @@ uvicorn
 pytesseract
 pillow
 python-multipart
+python-magic
 pytest
 httpx
