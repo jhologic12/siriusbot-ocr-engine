@@ -14,20 +14,24 @@ MAX_UPLOAD_SIZE_BYTES = (
 )
 
 
-ALLOWED_IMAGE_EXTENSIONS = {
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".tiff",
-    ".bmp",
-    ".webp",
-}
-
+# ==========================
+# Seguridad MIME
+# ==========================
 
 ALLOWED_IMAGE_MIME_TYPES = {
     "image/jpeg",
     "image/png",
-    "image/tiff",
-    "image/bmp",
     "image/webp",
+}
+
+
+# ==========================
+# Seguridad extensión
+# ==========================
+
+ALLOWED_IMAGE_EXTENSIONS = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
 }

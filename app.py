@@ -21,6 +21,10 @@ from PIL import Image
 
 from services.validator import validate_image
 
+from services.file_security import (
+    validate_file_security,
+)
+
 from services.preprocessor import (
     preprocess_image,
     image_to_bytes,
@@ -132,6 +136,38 @@ async def process_image(
         image_bytes = await file.read()
 
 
+        # ===============================
+        # Seguridad del contenido archivo
+        # ===============================
+
+        file_valid, security_errors = validate_file_security(
+            file.filename,
+            image_bytes,
+        )
+
+
+        if not file_valid:
+
+            register_error(
+                "FILE_SECURITY_ERROR"
+            )
+
+
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "error": {
+                        "code": "FILE_SECURITY_ERROR",
+                        "message": (
+                            "Archivo rechazado por validación de seguridad"
+                        ),
+                        "details": security_errors,
+                    },
+                },
+            )
+        
+        
         # ===============================
         # Validación inicial
         # ===============================
