@@ -11,6 +11,7 @@ from fastapi import (
     FastAPI,
     UploadFile,
     File,
+    Request
 )
 
 from fastapi.responses import JSONResponse
@@ -41,6 +42,10 @@ from utils.error_handlers import (
 
 from utils.middleware import (
     observability_middleware,
+)
+
+from utils.request_security import (
+    validate_request,
 )
 
 from utils.metrics import metrics
@@ -107,19 +112,22 @@ def get_metrics():
 
 @app.post("/ocr")
 async def process_image(
+    request: Request,
     file: UploadFile = File(...)
 ):
 
+    
     start_time = time.perf_counter()
-
-
+    
     register_request(
-        "POST",
-        "/ocr"
-    )
-
+            "POST",
+            "/ocr"
+        )
 
     try:
+        
+        await validate_request(request)
+        
 
         image_bytes = await file.read()
 
