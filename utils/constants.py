@@ -35,3 +35,13 @@ ALLOWED_IMAGE_EXTENSIONS = {
     ".png",
     ".webp",
 }
+
+# ==========================
+# Protección Image Bomb
+# ==========================
+
+MAX_IMAGE_PIXELS = 25_000_000
+
+MAX_IMAGE_WIDTH = 10000
+
+MAX_IMAGE_HEIGHT = 10000
