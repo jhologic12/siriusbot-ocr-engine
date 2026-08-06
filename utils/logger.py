@@ -1,27 +1,21 @@
 """
 Logger Configuration
 --------------------
-Configuración centralizada de logs
+Configuración centralizada de logs JSON
 para SiriusBot OCR Engine.
 """
 
 import logging
 import sys
 
-
-LOG_FORMAT = (
-    "%(asctime)s | "
-    "%(levelname)s | "
-    "%(name)s | "
-    "%(message)s"
-)
+from pythonjsonlogger.json import JsonFormatter
 
 
 def get_logger(
     name: str = "siriusbot-ocr",
 ) -> logging.Logger:
     """
-    Retorna un logger configurado.
+    Retorna un logger configurado con salida JSON.
     """
 
     logger = logging.getLogger(name)
@@ -30,24 +24,14 @@ def get_logger(
     if logger.handlers:
         return logger
 
-    handler = logging.StreamHandler(
-        sys.stdout
-    )
+    handler = logging.StreamHandler(sys.stdout)
 
-    formatter = logging.Formatter(
-        LOG_FORMAT
-    )
+    formatter = JsonFormatter("%(asctime)s %(levelname)s %(name)s %(message)s")
 
-    handler.setFormatter(
-        formatter
-    )
+    handler.setFormatter(formatter)
 
-    logger.addHandler(
-        handler
-    )
+    logger.addHandler(handler)
 
-    logger.setLevel(
-        logging.INFO
-    )
+    logger.setLevel(logging.INFO)
 
     return logger
