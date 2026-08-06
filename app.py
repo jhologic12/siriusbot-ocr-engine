@@ -78,9 +78,29 @@ register_exception_handlers(app)
 
 
 @app.get("/")
+def root():
+
+    return {
+        "service": "SiriusBot OCR Engine",
+        "status": "running",
+    }
+
+
+@app.get("/health")
 def health():
 
-    return {"service": "SiriusBot OCR Engine", "status": "running"}
+    return {
+        "status": "healthy",
+        "service": "siriusbot-ocr-engine",
+    }
+
+
+@app.get("/ready")
+def readiness():
+
+    return {
+        "status": "ready",
+    }
 
 
 # ==================================
