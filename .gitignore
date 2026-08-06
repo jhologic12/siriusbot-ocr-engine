@@ -34,3 +34,14 @@ tmp/
 tests/invoices/*.jpg
 tests/invoices/*.jpeg
 tests/invoices/*.png
+# Dev containers
+.devcontainer/.cache/
+
+# Python coverage
+.coverage
+htmlcov/
+coverage.xml
+
+# Environment files
+.env
+*.env
