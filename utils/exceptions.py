@@ -4,10 +4,10 @@ Exceptions
 Excepciones estándar del SiriusBot OCR Engine.
 """
 
-
 # ==================================
 # Excepción base OCR Engine
 # ==================================
+
 
 class OCRException(Exception):
     """
@@ -15,21 +15,17 @@ class OCRException(Exception):
     del motor OCR.
     """
 
-    def __init__(
-        self,
-        message: str,
-        code: str = "OCR_ERROR"
-    ):
+    def __init__(self, message: str, code: str = "OCR_ERROR"):
         self.message = message
         self.code = code
 
         super().__init__(message)
 
 
-
 # ==================================
 # Imagen inválida
 # ==================================
+
 
 class InvalidImageException(OCRException):
     """
@@ -37,21 +33,14 @@ class InvalidImageException(OCRException):
     ser procesada.
     """
 
-    def __init__(
-        self,
-        message: str = "Imagen inválida",
-        code: str = "INVALID_IMAGE"
-    ):
-        super().__init__(
-            message=message,
-            code=code
-        )
-
+    def __init__(self, message: str = "Imagen inválida", code: str = "INVALID_IMAGE"):
+        super().__init__(message=message, code=code)
 
 
 # ==================================
 # Calidad insuficiente
 # ==================================
+
 
 class LowQualityException(OCRException):
     """
@@ -62,18 +51,15 @@ class LowQualityException(OCRException):
     def __init__(
         self,
         message: str = "Calidad de imagen insuficiente",
-        code: str = "LOW_IMAGE_QUALITY"
+        code: str = "LOW_IMAGE_QUALITY",
     ):
-        super().__init__(
-            message=message,
-            code=code
-        )
-
+        super().__init__(message=message, code=code)
 
 
 # ==================================
 # Error procesamiento OCR
 # ==================================
+
 
 class OCRProcessingException(OCRException):
     """
@@ -82,11 +68,28 @@ class OCRProcessingException(OCRException):
     """
 
     def __init__(
+        self, message: str = "Error procesando OCR", code: str = "OCR_PROCESSING_ERROR"
+    ):
+        super().__init__(message=message, code=code)
+
+
+# ==================================
+# Timeout ejecución OCR
+# ==================================
+
+
+class OCRTimeoutException(OCRException):
+    """
+    Error cuando el procesamiento OCR
+    supera el tiempo máximo permitido.
+    """
+
+    def __init__(
         self,
-        message: str = "Error procesando OCR",
-        code: str = "OCR_PROCESSING_ERROR"
+        message: str = "Tiempo máximo de procesamiento OCR excedido",
+        code: str = "OCR_TIMEOUT",
     ):
         super().__init__(
             message=message,
-            code=code
+            code=code,
         )

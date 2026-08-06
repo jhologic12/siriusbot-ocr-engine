@@ -11,10 +11,14 @@ from PIL import Image
 from config import (
     OCR_LANGUAGE,
     OCR_CONFIG,
+    OCR_TIMEOUT_SECONDS,
 )
 
 from models.response_models import OCRResult
 
+from utils.exceptions import (
+    OCRTimeoutException,
+)
 
 
 def extract_text(
@@ -31,17 +35,22 @@ def extract_text(
         OCRResult
     """
 
-
     # ==========================
     # Extracción de texto
     # ==========================
 
-    text: str = pytesseract.image_to_string(
-        image,
-        lang=OCR_LANGUAGE,
-        config=OCR_CONFIG,
-    )
+    try:
 
+        text: str = pytesseract.image_to_string(
+            image,
+            lang=OCR_LANGUAGE,
+            config=OCR_CONFIG,
+            timeout=OCR_TIMEOUT_SECONDS,
+        )
+
+    except TimeoutError:
+
+        raise OCRTimeoutException()
 
     # ==========================
     # Cálculo de confianza
@@ -54,36 +63,25 @@ def extract_text(
         output_type=pytesseract.Output.DICT,
     )
 
-
     confidences = []
 
-
     for confidence in data["conf"]:
-
         try:
-
             value = float(confidence)
 
             if value >= 0:
-
                 confidences.append(value)
 
         except ValueError:
-
             continue
-
-
 
     confidence = None
 
-
     if confidences:
-
         confidence = round(
             sum(confidences) / len(confidences),
             2,
         )
-
 
     return OCRResult(
         text=text.strip(),

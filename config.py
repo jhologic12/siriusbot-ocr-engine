@@ -4,8 +4,6 @@ Configuración global del OCR Engine.
 SiriusBot OCR Engine
 """
 
-
-
 # ==========================
 # OCR
 # ==========================
@@ -24,11 +22,17 @@ Tesseract Page Segmentation Mode.
 6 = Bloque uniforme de texto.
 """
 
-OCR_CONFIG: str = (
-    f"--oem {OCR_ENGINE_MODE} "
-    f"--psm {OCR_PAGE_SEGMENT}"
-)
+OCR_CONFIG: str = f"--oem {OCR_ENGINE_MODE} " f"--psm {OCR_PAGE_SEGMENT}"
 
+# ==========================
+# OCR Timeout
+# ==========================
+
+OCR_TIMEOUT_SECONDS: int = 15
+"""
+Tiempo máximo permitido para
+ejecutar Tesseract OCR.
+"""
 
 
 # ==========================
@@ -42,15 +46,12 @@ Tamaño mínimo permitido en bytes.
 
 MAX_FILE_SIZE_MB: int = 20
 
-MAX_FILE_SIZE: int = (
-    MAX_FILE_SIZE_MB * 1024 * 1024
-)
+MAX_FILE_SIZE: int = MAX_FILE_SIZE_MB * 1024 * 1024
 
 
 MIN_WIDTH: int = 800
 
 MIN_HEIGHT: int = 800
-
 
 
 # ==========================
@@ -64,7 +65,6 @@ MIN_CONTRAST: int = 15
 MIN_BRIGHTNESS: int = 45
 
 MAX_BRIGHTNESS: int = 250
-
 
 
 # ==========================
