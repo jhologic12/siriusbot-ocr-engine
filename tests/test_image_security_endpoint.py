@@ -35,7 +35,7 @@ def test_ocr_rejects_image_with_excessive_pixels():
     image_bytes.seek(0)
 
     response = client.post(
-        "/ocr",
+        "/api/v1/ocr",
         files={
             "file": (
                 "bomb.png",
@@ -73,7 +73,7 @@ def test_ocr_accepts_safe_image():
     image_bytes.seek(0)
 
     response = client.post(
-        "/ocr",
+        "/api/v1/ocr",
         files={
             "file": (
                 "invoice.png",
