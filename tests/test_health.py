@@ -15,7 +15,7 @@ def test_health_endpoint():
     Verifica que /health responde correctamente.
     """
 
-    response = client.get("/health")
+    response = client.get("/api/v1/health")
 
     assert response.status_code == 200
 
@@ -31,7 +31,7 @@ def test_ready_endpoint():
     Verifica que /ready responde correctamente.
     """
 
-    response = client.get("/ready")
+    response = client.get("/api/v1/ready")
 
     assert response.status_code == 200
 

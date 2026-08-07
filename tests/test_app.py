@@ -55,7 +55,7 @@ def test_ocr_endpoint_with_valid_image():
     image = create_test_image()
 
     response = client.post(
-        "/ocr",
+        "/api/v1/ocr",
         files={
             "file": (
                 "test.jpg",
@@ -80,7 +80,7 @@ def test_ocr_endpoint_with_valid_image():
 def test_ocr_endpoint_invalid_file():
 
     response = client.post(
-        "/ocr",
+        "/api/v1/ocr",
         files={
             "file": (
                 "test.txt",
@@ -106,7 +106,7 @@ def test_ocr_response_structure():
     image = create_test_image()
 
     response = client.post(
-        "/ocr",
+        "/api/v1/ocr",
         files={
             "file": (
                 "invoice.jpg",
