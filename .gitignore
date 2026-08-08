@@ -34,6 +34,7 @@ tmp/
 tests/invoices/*.jpg
 tests/invoices/*.jpeg
 tests/invoices/*.png
+!tests/invoices/test_invoice.jpg
 # Dev containers
 .devcontainer/.cache/
 
@@ -45,3 +46,4 @@ coverage.xml
 # Environment files
 .env
 *.env
+.venv/
