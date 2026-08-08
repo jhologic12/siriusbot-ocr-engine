@@ -154,9 +154,7 @@ async def execute_ocr_pipeline(
 
         metrics.add_processing_time(elapsed)
 
-        metrics.increment("ocr_success")
-
-        register_success(elapsed)
+        register_success()
 
         response = build_response(
             validation=validation,

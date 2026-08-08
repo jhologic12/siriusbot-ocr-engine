@@ -1,19 +1,12 @@
 """
-Telemetry Service
------------------
 Servicio centralizado de observabilidad
 del SiriusBot OCR Engine.
 """
 
-
 from utils.metrics import metrics
 from utils.logger import get_logger
 
-
-logger = get_logger(
-    "telemetry"
-)
-
+logger = get_logger("telemetry")
 
 
 def register_request(
@@ -21,63 +14,40 @@ def register_request(
     path: str,
 ):
     """
-    Registra una petición recibida.
+    Registra una petición OCR recibida.
     """
-
-    metrics.increment(
-        "requests_total"
-    )
-
 
     logger.info(
         f"REQUEST {method} {path}"
     )
 
 
-
-def register_success(
-    processing_time: float,
-):
+def register_success():
     """
-    Registra una petición exitosa.
+    Registra un procesamiento OCR exitoso.
     """
 
-    metrics.increment(
-        "requests_success"
-    )
-
-
-    metrics.add_processing_time(
-        processing_time
-    )
-
+    metrics.increment("ocr_success")
 
 
 def register_error(
     error_type: str,
 ):
     """
-    Registra una petición fallida.
+    Registra un error ocurrido durante
+    el procesamiento OCR.
     """
 
-    metrics.increment(
-        "requests_error"
-    )
+    metrics.increment("ocr_failed")
 
-
-    metrics.increment(
-        error_type
-    )
-
+    metrics.increment(error_type)
 
     logger.error(
         f"ERROR {error_type}"
     )
 
 
-
 def get_telemetry():
-
     """
     Retorna estado actual
     de métricas del Engine.
@@ -86,9 +56,7 @@ def get_telemetry():
     return metrics.get_metrics()
 
 
-
 def reset_telemetry():
-
     """
     Limpia métricas.
     """

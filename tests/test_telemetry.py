@@ -21,45 +21,33 @@ def setup_function():
 
 
 
-def test_register_request():
+def test_register_request(caplog):
+    with caplog.at_level("INFO"):
+        register_request(
+            "GET",
+            "/"
+        )
 
-    register_request(
-        "GET",
-        "/"
-    )
+    messages = [
+        record.message
+        for record in caplog.records
+    ]
 
-
-    data = get_telemetry()
-
-
-    assert (
-        data["requests_total"]
-        == 1
-    )
-
+    assert "REQUEST GET /" in messages
 
 
 def test_register_success():
 
-    register_success(
-        2.5
-    )
+    register_success()
 
 
     data = get_telemetry()
 
 
     assert (
-        data["requests_success"]
+        data["ocr_success"]
         == 1
     )
-
-
-    assert (
-        data["total_processing_time"]
-        == 2.5
-    )
-
 
 
 def test_register_error():
@@ -73,7 +61,7 @@ def test_register_error():
 
 
     assert (
-        data["requests_error"]
+        data["ocr_failed"]
         == 1
     )
 
