@@ -53,7 +53,7 @@ async def observability_middleware(
 
         elapsed = time.time() - start_time
 
-        metrics.add_processing_time(elapsed)
+        metrics.add_request_time(elapsed)
 
         metrics.increment("requests_success")
 
