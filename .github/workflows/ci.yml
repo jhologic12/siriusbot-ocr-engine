@@ -54,3 +54,49 @@ jobs:
           docker build \
             --tag siriusbot-ocr:ci \
             .
+
+      - name: Run Docker container
+        run: |
+          docker run -d \
+            --name siriusbot-ocr-ci \
+            -p 8000:8000 \
+            siriusbot-ocr:ci
+
+      - name: Wait for container health
+        run: |
+          for i in {1..30}; do
+            STATUS=$(docker inspect \
+              --format='{{.State.Health.Status}}' \
+              siriusbot-ocr-ci)
+
+            echo "Container health: $STATUS"
+
+            if [ "$STATUS" = "healthy" ]; then
+              exit 0
+            fi
+
+            if [ "$STATUS" = "unhealthy" ]; then
+              docker logs siriusbot-ocr-ci
+              exit 1
+            fi
+
+            sleep 2
+          done
+
+          echo "Container did not become healthy"
+          docker logs siriusbot-ocr-ci
+          exit 1
+
+      - name: Test health endpoint
+        run: |
+          curl --fail http://localhost:8000/api/v1/health
+
+      - name: Test readiness endpoint
+        run: |
+          curl --fail http://localhost:8000/api/v1/ready
+
+      - name: Stop Docker container
+        if: always()
+        run: |
+          docker stop siriusbot-ocr-ci || true
+          docker rm siriusbot-ocr-ci || true
