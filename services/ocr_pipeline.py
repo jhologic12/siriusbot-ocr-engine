@@ -89,7 +89,7 @@ async def execute_ocr_pipeline(
                 message="Imagen inválida",
             )
 
-            data = response.model_dump()
+            data = response.model_dump(by_alias=True)
 
             data["error"] = {
                 "code": "INVALID_IMAGE",
@@ -137,7 +137,7 @@ async def execute_ocr_pipeline(
 
             return JSONResponse(
                 status_code=422,
-                content=response.model_dump(),
+                content=response.model_dump(by_alias=True),
             )
 
         ocr_result = extract_text(processed_image)
@@ -164,7 +164,7 @@ async def execute_ocr_pipeline(
             message="Proceso completado",
         )
 
-        data = response.model_dump()
+        data = response.model_dump(by_alias=True)
 
         data["error"] = None
 
