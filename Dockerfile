@@ -33,9 +33,9 @@ WORKDIR /app
 # Python dependencies
 # ==================================
 
-COPY requirements.txt .
+COPY requirements.lock.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.lock.txt
 
 
 # ==================================
