@@ -1,9 +1,6 @@
 services:
-
   siriusbot-ocr:
-
     image: siriusbot-ocr:production
-
     container_name: siriusbot-ocr-prod
 
     ports:
@@ -13,3 +10,44 @@ services:
       - .env
 
     restart: unless-stopped
+    init: true
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "--silent",
+          "--show-error",
+          "http://localhost:8000/api/v1/health"
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    networks:
+      - ocr-network
+
+networks:
+  ocr-network:
+    driver: bridge
