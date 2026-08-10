@@ -4,11 +4,8 @@ Configuración global del OCR Engine.
 SiriusBot OCR Engine
 """
 
-# ==========================
-# OCR
-# ==========================
-
 import os
+
 
 # ==========================
 # Runtime Environment
@@ -16,10 +13,43 @@ import os
 
 APP_ENV: str = os.getenv("APP_ENV", "development")
 
-SERVICE_NAME: str = os.getenv("SERVICE_NAME", "SiriusBot OCR Engine")
+VALID_APP_ENVS = {
+    "development",
+    "test",
+    "production",
+}
 
-LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+if APP_ENV not in VALID_APP_ENVS:
+    raise ValueError(
+        f"APP_ENV must be one of: {', '.join(sorted(VALID_APP_ENVS))}"
+    )
 
+
+SERVICE_NAME: str = os.getenv(
+    "SERVICE_NAME",
+    "SiriusBot OCR Engine",
+)
+
+
+LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO").upper()
+
+VALID_LOG_LEVELS = {
+    "DEBUG",
+    "INFO",
+    "WARNING",
+    "ERROR",
+    "CRITICAL",
+}
+
+if LOG_LEVEL not in VALID_LOG_LEVELS:
+    raise ValueError(
+        f"LOG_LEVEL must be one of: {', '.join(sorted(VALID_LOG_LEVELS))}"
+    )
+
+
+# ==========================
+# OCR
+# ==========================
 
 OCR_LANGUAGE: str = "spa"
 
@@ -35,17 +65,24 @@ Tesseract Page Segmentation Mode.
 6 = Bloque uniforme de texto.
 """
 
-OCR_CONFIG: str = f"--oem {OCR_ENGINE_MODE} " f"--psm {OCR_PAGE_SEGMENT}"
+OCR_CONFIG: str = (
+    f"--oem {OCR_ENGINE_MODE} "
+    f"--psm {OCR_PAGE_SEGMENT}"
+)
+
 
 # ==========================
 # OCR Timeout
 # ==========================
 
-OCR_TIMEOUT_SECONDS: int = int(os.getenv("OCR_TIMEOUT_SECONDS", "15"))
-"""
-Tiempo máximo permitido para
-ejecutar Tesseract OCR.
-"""
+OCR_TIMEOUT_SECONDS: int = int(
+    os.getenv("OCR_TIMEOUT_SECONDS", "15")
+)
+
+if OCR_TIMEOUT_SECONDS <= 0:
+    raise ValueError(
+        "OCR_TIMEOUT_SECONDS must be greater than 0"
+    )
 
 
 # ==========================
@@ -57,10 +94,16 @@ MIN_FILE_SIZE: int = 15_000
 Tamaño mínimo permitido en bytes.
 """
 
-MAX_FILE_SIZE_MB: int = int(os.getenv("MAX_FILE_SIZE_MB", "20"))
+MAX_FILE_SIZE_MB: int = int(
+    os.getenv("MAX_FILE_SIZE_MB", "20")
+)
+
+if MAX_FILE_SIZE_MB <= 0:
+    raise ValueError(
+        "MAX_FILE_SIZE_MB must be greater than 0"
+    )
 
 MAX_FILE_SIZE: int = MAX_FILE_SIZE_MB * 1024 * 1024
-
 
 MIN_WIDTH: int = 800
 
