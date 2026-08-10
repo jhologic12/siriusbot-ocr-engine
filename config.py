@@ -134,3 +134,30 @@ JPEG_QUALITY: int = 95
 SHARPNESS_FACTOR: float = 2.0
 
 CONTRAST_FACTOR: float = 1.8
+
+
+# ==========================
+# API Documentation
+# ==========================
+
+def get_api_docs_config(app_env: str) -> dict[str, str | None]:
+    """
+    Retorna la configuración de documentación de la API
+    según el entorno de ejecución.
+
+    En producción se deshabilitan Swagger, ReDoc y OpenAPI
+    para reducir la superficie de exposición del servicio.
+    """
+
+    if app_env == "production":
+        return {
+            "docs_url": None,
+            "redoc_url": None,
+            "openapi_url": None,
+        }
+
+    return {
+        "docs_url": "/docs",
+        "redoc_url": "/redoc",
+        "openapi_url": "/openapi.json",
+    }
