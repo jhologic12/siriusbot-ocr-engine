@@ -1,6 +1,4 @@
 """
-HTTP Middleware
----------------
 Middleware global para observabilidad
 del SiriusBot OCR Engine.
 """
@@ -30,10 +28,10 @@ async def observability_middleware(
     - Medir tiempo
     - Registrar logs estructurados
     - Actualizar métricas
+    - Agregar headers de seguridad HTTP
     """
 
     request_id = generate_request_id()
-
     start_time = time.time()
 
     logger.info(
@@ -48,16 +46,20 @@ async def observability_middleware(
     metrics.increment("requests_total")
 
     try:
-
         response = await call_next(request)
 
         elapsed = time.time() - start_time
 
         metrics.add_request_time(elapsed)
-
         metrics.increment("requests_success")
 
+        # Request tracing
         response.headers["X-Request-ID"] = request_id
+
+        # Security headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "no-referrer"
 
         logger.info(
             "request_completed",
@@ -73,7 +75,6 @@ async def observability_middleware(
         return response
 
     except Exception:
-
         metrics.increment("requests_failed")
 
         logger.exception(
@@ -88,5 +89,4 @@ async def observability_middleware(
         raise
 
     finally:
-
         clear_request_id()

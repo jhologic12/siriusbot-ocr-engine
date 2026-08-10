@@ -223,3 +223,18 @@ def test_ocr_response_structure():
     }
 
     assert expected_fields.issubset(data.keys())
+
+
+def test_security_headers():
+    """
+    Verifica que la API incluya headers HTTP
+    básicos de seguridad.
+    """
+
+    response = client.get("/api/v1/health")
+
+    assert response.status_code == 200
+
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["X-Frame-Options"] == "DENY"
+    assert response.headers["Referrer-Policy"] == "no-referrer"
