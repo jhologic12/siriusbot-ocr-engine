@@ -30,7 +30,6 @@ SERVICE_NAME: str = os.getenv(
     "SiriusBot OCR Engine",
 )
 
-
 LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO").upper()
 
 VALID_LOG_LEVELS = {
@@ -140,7 +139,9 @@ CONTRAST_FACTOR: float = 1.8
 # API Documentation
 # ==========================
 
-def get_api_docs_config(app_env: str) -> dict[str, str | None]:
+def get_api_docs_config(
+    app_env: str,
+) -> dict[str, str | None]:
     """
     Retorna la configuración de documentación de la API
     según el entorno de ejecución.
@@ -160,4 +161,24 @@ def get_api_docs_config(app_env: str) -> dict[str, str | None]:
         "docs_url": "/docs",
         "redoc_url": "/redoc",
         "openapi_url": "/openapi.json",
+    }
+
+
+# ==========================
+# Metrics endpoint
+# ==========================
+
+def get_metrics_config(
+    app_env: str,
+) -> dict[str, bool]:
+    """
+    Retorna la configuración del endpoint de métricas
+    según el entorno de ejecución.
+
+    En producción se deshabilita el endpoint para reducir
+    la exposición de información operacional del servicio.
+    """
+
+    return {
+        "enabled": app_env != "production",
     }
