@@ -31,6 +31,12 @@ from utils.telemetry import (
     register_success,
 )
 
+from utils.prometheus_metrics import (
+    register_ocr_success,
+    register_ocr_failure,
+    register_ocr_processing_time,
+)
+
 
 async def execute_ocr_pipeline(
     request: Request,
@@ -140,7 +146,13 @@ async def execute_ocr_pipeline(
                 content=response.model_dump(by_alias=True),
             )
 
+        ocr_start_time = time.perf_counter()
+
         ocr_result = extract_text(processed_image)
+
+        ocr_elapsed = time.perf_counter() - ocr_start_time
+
+        register_ocr_processing_time(ocr_elapsed)
 
         processing = ProcessingResult(
             processed=True,
@@ -155,6 +167,7 @@ async def execute_ocr_pipeline(
         metrics.add_processing_time(elapsed)
 
         register_success()
+        register_ocr_success()
 
         response = build_response(
             validation=validation,
@@ -178,5 +191,6 @@ async def execute_ocr_pipeline(
         metrics.increment("ocr_failed")
 
         register_error("OCR_EXCEPTION")
+        register_ocr_failure()
 
         raise error

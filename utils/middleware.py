@@ -14,6 +14,12 @@ from utils.request_context import (
     clear_request_id,
 )
 
+from utils.prometheus_metrics import (
+    register_request as prometheus_register_request,
+    register_request_completed,
+    register_request_failed,
+)
+
 logger = get_logger(__name__)
 
 
@@ -45,6 +51,11 @@ async def observability_middleware(
 
     metrics.increment("requests_total")
 
+    prometheus_register_request(
+        method=request.method,
+        path=request.url.path,
+    )
+
     try:
         response = await call_next(request)
 
@@ -52,6 +63,13 @@ async def observability_middleware(
 
         metrics.add_request_time(elapsed)
         metrics.increment("requests_success")
+
+        register_request_completed(
+            method=request.method,
+            path=request.url.path,
+            status_code=response.status_code,
+            duration=elapsed,
+        )
 
         # Request tracing
         response.headers["X-Request-ID"] = request_id
@@ -76,6 +94,11 @@ async def observability_middleware(
 
     except Exception:
         metrics.increment("requests_failed")
+
+        register_request_failed(
+            method=request.method,
+            path=request.url.path,
+        )
 
         logger.exception(
             "request_failed",

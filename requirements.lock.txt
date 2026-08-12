@@ -48,6 +48,8 @@ pluggy==1.6.0
     # via
     #   pytest
     #   pytest-cov
+prometheus-client==0.26.0
+    # via -r requirements.txt
 pydantic==2.13.4
     # via fastapi
 pydantic-core==2.46.4
