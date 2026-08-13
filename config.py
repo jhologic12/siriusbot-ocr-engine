@@ -108,6 +108,28 @@ MIN_WIDTH: int = 800
 
 MIN_HEIGHT: int = 800
 
+# ==========================
+# Rate limiting
+# ==========================
+
+RATE_LIMIT_REQUESTS: int = int(
+    os.getenv("RATE_LIMIT_REQUESTS", "10")
+)
+
+if RATE_LIMIT_REQUESTS <= 0:
+    raise ValueError(
+        "RATE_LIMIT_REQUESTS must be greater than 0"
+    )
+
+RATE_LIMIT_WINDOW_SECONDS: int = int(
+    os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60")
+)
+
+if RATE_LIMIT_WINDOW_SECONDS <= 0:
+    raise ValueError(
+        "RATE_LIMIT_WINDOW_SECONDS must be greater than 0"
+    )
+
 
 # ==========================
 # Calidad imagen
