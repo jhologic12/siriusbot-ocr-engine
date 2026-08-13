@@ -6,7 +6,9 @@ del SiriusBot OCR Engine.
 import time
 
 from fastapi import Request
+from fastapi.responses import JSONResponse
 
+from utils.rate_limiter import rate_limiter
 from utils.logger import get_logger
 from utils.metrics import metrics
 from utils.request_context import (
@@ -57,7 +59,29 @@ async def observability_middleware(
     )
 
     try:
-        response = await call_next(request)
+        if request.method == "POST" and request.url.path == "/api/v1/ocr":
+            client_host = request.client.host if request.client else "unknown"
+
+            if not rate_limiter.is_allowed(client_host):
+                retry_after = rate_limiter.get_retry_after(client_host)
+
+                response = JSONResponse(
+                    status_code=429,
+                    content={
+                        "success": False,
+                        "error": {
+                            "code": "RATE_LIMIT_EXCEEDED",
+                            "message": "Too many requests",
+                        },
+                    },
+                    headers={
+                        "Retry-After": str(retry_after),
+                    },
+                )
+            else:
+                response = await call_next(request)
+        else:
+            response = await call_next(request)
 
         elapsed = time.time() - start_time
 
@@ -91,7 +115,6 @@ async def observability_middleware(
         )
 
         return response
-
     except Exception:
         metrics.increment("requests_failed")
 
