@@ -24,7 +24,12 @@ from services.response_builder import build_response
 from services.validator import validate_image
 
 from utils.metrics import metrics
-from utils.request_security import validate_request
+
+from utils.request_security import (
+    read_upload_with_limit,
+    validate_request,
+)
+
 from utils.telemetry import (
     register_error,
     register_request,
@@ -62,7 +67,7 @@ async def execute_ocr_pipeline(
     try:
         await validate_request(request)
 
-        image_bytes = await file.read()
+        image_bytes = await read_upload_with_limit(file)
 
         file_valid, security_errors = validate_file_security(
             file.filename,

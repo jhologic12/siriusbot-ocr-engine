@@ -6,11 +6,18 @@ Validaciones de seguridad HTTP.
 
 import pytest
 
-from fastapi import HTTPException
+from io import BytesIO
+
+from fastapi import HTTPException, UploadFile
+
 from starlette.requests import Request
 
 from config import MAX_FILE_SIZE
-from utils.request_security import validate_request
+
+from utils.request_security import (
+    read_upload_with_limit,
+    validate_request,
+)
 
 
 @pytest.mark.anyio
@@ -101,3 +108,56 @@ async def test_accept_request_without_content_length():
     result = await validate_request(request)
 
     assert result is None
+
+
+@pytest.mark.anyio
+async def test_read_upload_within_limit(monkeypatch):
+    monkeypatch.setattr(
+        "utils.request_security.MAX_FILE_SIZE",
+        10,
+    )
+
+    file = UploadFile(
+        file=BytesIO(b"1234567890"),
+        filename="test.jpg",
+    )
+
+    result = await read_upload_with_limit(file)
+
+    assert result == b"1234567890"
+
+
+@pytest.mark.anyio
+async def test_read_upload_rejects_oversized_file(monkeypatch):
+    monkeypatch.setattr(
+        "utils.request_security.MAX_FILE_SIZE",
+        10,
+    )
+
+    file = UploadFile(
+        file=BytesIO(b"12345678901"),
+        filename="test.jpg",
+    )
+
+    with pytest.raises(HTTPException) as error:
+        await read_upload_with_limit(file)
+
+    assert error.value.status_code == 413
+
+
+@pytest.mark.anyio
+async def test_read_upload_reads_only_limit_plus_one(monkeypatch):
+    monkeypatch.setattr(
+        "utils.request_security.MAX_FILE_SIZE",
+        10,
+    )
+
+    file = UploadFile(
+        file=BytesIO(b"12345678901234567890"),
+        filename="test.jpg",
+    )
+
+    with pytest.raises(HTTPException) as error:
+        await read_upload_with_limit(file)
+
+    assert error.value.status_code == 413
