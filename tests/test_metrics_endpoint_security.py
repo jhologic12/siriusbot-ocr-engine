@@ -6,13 +6,18 @@ import importlib
 
 from fastapi.testclient import TestClient
 
-
 def load_app(app_env: str, monkeypatch):
     """
     Carga la aplicación FastAPI con el entorno indicado.
     """
 
     monkeypatch.setenv("APP_ENV", app_env)
+
+    if app_env == "production":
+        monkeypatch.setenv(
+            "ALLOWED_HOSTS",
+            "localhost,127.0.0.1,testserver",
+        )
 
     import config
     import app
@@ -21,7 +26,6 @@ def load_app(app_env: str, monkeypatch):
     importlib.reload(app)
 
     return app.app
-
 
 def test_metrics_endpoint_enabled_in_development(monkeypatch):
     """El endpoint de métricas debe estar disponible en desarrollo."""

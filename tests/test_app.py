@@ -10,9 +10,10 @@ from PIL import Image
 
 from app import app
 
-
-client = TestClient(app)
-
+client = TestClient(
+    app,
+    headers={"host": "localhost"},
+)
 
 def create_test_image() -> io.BytesIO:
     """

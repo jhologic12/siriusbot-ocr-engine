@@ -45,6 +45,42 @@ if LOG_LEVEL not in VALID_LOG_LEVELS:
         f"LOG_LEVEL must be one of: {', '.join(sorted(VALID_LOG_LEVELS))}"
     )
 
+# ==========================
+# Allowed Hosts
+# ==========================
+
+DEFAULT_ALLOWED_HOSTS = {
+    "development": ["localhost", "127.0.0.1", "testserver"],
+    "test": ["localhost", "127.0.0.1", "testserver"],
+}
+
+
+
+_allowed_hosts_raw = os.getenv("ALLOWED_HOSTS")
+
+if APP_ENV == "production" and not _allowed_hosts_raw:
+    raise ValueError(
+        "ALLOWED_HOSTS must be explicitly configured in production"
+    )
+
+if _allowed_hosts_raw:
+    ALLOWED_HOSTS = [
+        host.strip()
+        for host in _allowed_hosts_raw.split(",")
+        if host.strip()
+    ]
+else:
+    ALLOWED_HOSTS = DEFAULT_ALLOWED_HOSTS[APP_ENV]
+
+if not ALLOWED_HOSTS:
+    raise ValueError(
+        "ALLOWED_HOSTS must contain at least one host"
+    )
+
+if "*" in ALLOWED_HOSTS:
+    raise ValueError(
+        "ALLOWED_HOSTS must not contain '*'"
+    )
 
 # ==========================
 # OCR
