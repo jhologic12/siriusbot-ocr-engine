@@ -4,7 +4,7 @@ Request Security Middleware
 Protecciones de seguridad para las peticiones HTTP.
 """
 
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, UploadFile
 
 from config import MAX_FILE_SIZE
 
@@ -28,10 +28,27 @@ async def validate_request(
     content_length = request.headers.get("content-length")
 
     if content_length:
-
         if int(content_length) > MAX_FILE_SIZE:
-
             raise HTTPException(
                 status_code=413,
                 detail="File exceeds maximum allowed size",
             )
+
+
+async def read_upload_with_limit(
+    file: UploadFile,
+) -> bytes:
+    """
+    Lee el archivo recibido aplicando un límite real
+    de tamaño independientemente de Content-Length.
+    """
+
+    image_bytes = await file.read(MAX_FILE_SIZE + 1)
+
+    if len(image_bytes) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=413,
+            detail="File exceeds maximum allowed size",
+        )
+
+    return image_bytes
