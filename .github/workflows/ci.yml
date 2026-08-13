@@ -60,6 +60,7 @@ jobs:
           docker run -d \
             --name siriusbot-ocr-smoke \
             --env APP_ENV=production \
+            --env ALLOWED_HOSTS=localhost \
             --publish 8000:8000 \
             siriusbot-ocr:ci
 

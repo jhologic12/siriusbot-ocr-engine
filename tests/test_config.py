@@ -24,12 +24,21 @@ def test_config_defaults():
     "value",
     ["development", "test", "production"],
 )
+
+
 def test_valid_app_env(monkeypatch, value):
     monkeypatch.setenv("APP_ENV", value)
+
+    if value == "production":
+        monkeypatch.setenv(
+            "ALLOWED_HOSTS",
+            "ocr.example.com",
+        )
 
     importlib.reload(config)
 
     assert config.APP_ENV == value
+
 
 
 @pytest.mark.parametrize(
@@ -88,5 +97,67 @@ def test_invalid_rate_limit_window(monkeypatch):
     with pytest.raises(
         ValueError,
         match="RATE_LIMIT_WINDOW_SECONDS",
+    ):
+        importlib.reload(config)
+
+
+def test_allowed_hosts_defaults(monkeypatch):
+    monkeypatch.setenv("APP_ENV", "development")
+    monkeypatch.delenv("ALLOWED_HOSTS", raising=False)
+
+    importlib.reload(config)
+
+    assert config.ALLOWED_HOSTS == [
+        "localhost",
+        "127.0.0.1",
+	"testserver",
+    ]
+
+
+def test_allowed_hosts_parsing(monkeypatch):
+    monkeypatch.setenv("APP_ENV", "development")
+    monkeypatch.setenv(
+        "ALLOWED_HOSTS",
+        "localhost, 127.0.0.1, example.com",
+    )
+
+    importlib.reload(config)
+
+    assert config.ALLOWED_HOSTS == [
+        "localhost",
+        "127.0.0.1",
+        "example.com",
+    ]
+
+
+def test_production_requires_allowed_hosts(monkeypatch):
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.delenv("ALLOWED_HOSTS", raising=False)
+
+    with pytest.raises(
+        ValueError,
+        match="ALLOWED_HOSTS",
+    ):
+        importlib.reload(config)
+
+
+def test_allowed_hosts_cannot_be_empty(monkeypatch):
+    monkeypatch.setenv("APP_ENV", "development")
+    monkeypatch.setenv("ALLOWED_HOSTS", "   ")
+
+    with pytest.raises(
+        ValueError,
+        match="ALLOWED_HOSTS",
+    ):
+        importlib.reload(config)
+
+
+def test_allowed_hosts_cannot_use_wildcard(monkeypatch):
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("ALLOWED_HOSTS", "*")
+
+    with pytest.raises(
+        ValueError,
+        match="ALLOWED_HOSTS",
     ):
         importlib.reload(config)

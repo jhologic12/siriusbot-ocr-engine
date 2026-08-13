@@ -3,9 +3,11 @@ API principal del microservicio OCR.
 """
 
 from fastapi import FastAPI
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from config import (
  APP_ENV,
+ ALLOWED_HOSTS,
  get_api_docs_config,
  get_metrics_config,
 )
@@ -16,6 +18,7 @@ from api.v1.ocr import router as ocr_router
 
 from utils.error_handlers import register_exception_handlers
 from utils.middleware import observability_middleware
+
 api_docs_config = get_api_docs_config(APP_ENV)
 metrics_config = get_metrics_config(APP_ENV)
 
@@ -26,6 +29,10 @@ app = FastAPI(
     **api_docs_config,
 )
 
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=ALLOWED_HOSTS,
+)
 
 # ==================================
 # API Versioning
