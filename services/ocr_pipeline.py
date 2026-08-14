@@ -130,11 +130,9 @@ async def execute_ocr_pipeline(
                 },
             )
 
-        processed_image = preprocess_image(image)
 
-        processed_bytes = image_to_bytes(processed_image)
 
-        quality = analyze_quality(processed_image)
+        quality = analyze_quality(image)
 
         if not quality.can_process:
 
@@ -151,6 +149,9 @@ async def execute_ocr_pipeline(
                 content=response.model_dump(by_alias=True),
             )
 
+        processed_image = preprocess_image(image)
+
+        processed_bytes = image_to_bytes(processed_image)
         ocr_start_time = time.perf_counter()
 
         ocr_result = extract_text(processed_image)

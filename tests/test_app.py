@@ -4,9 +4,13 @@ del SiriusBot OCR Engine.
 """
 
 import io
+import pytest
+
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
-from PIL import Image
+
+from PIL import Image, ImageDraw
 
 from app import app
 
@@ -162,6 +166,59 @@ def test_ocr_endpoint_with_valid_image():
     assert data["message"] == "Proceso completado"
 
 
+def test_ocr_endpoint_low_quality():
+    """
+    Verifica que una imagen válida pero con resolución
+    insuficiente sea rechazada por el análisis de calidad.
+    """
+
+    image = Image.new(
+        "RGB",
+        (400, 400),
+        "white",
+    )
+
+    draw = ImageDraw.Draw(image)
+
+    for y in range(0, 400, 10):
+        draw.line(
+            (0, y, 400, y),
+            fill=(y % 256, 50, 100),
+            width=3,
+        )
+
+    buffer = io.BytesIO()
+
+    image.save(
+        buffer,
+        format="JPEG",
+        quality=95,
+    )
+
+    buffer.seek(0)
+
+    response = client.post(
+        "/api/v1/ocr",
+        files={
+            "file": (
+                "low-quality.jpg",
+                buffer,
+                "image/jpeg",
+            )
+        },
+    )
+
+    assert response.status_code == 422
+
+    data = response.json()
+
+    assert data["success"] is True
+    assert data["quality"]["status"] == "BAD"
+    assert data["quality"]["canProcess"] is False
+    assert data["message"] == "Calidad insuficiente"
+
+
+
 def test_ocr_endpoint_invalid_file():
     """
     Verifica que un archivo inválido
@@ -187,6 +244,7 @@ def test_ocr_endpoint_invalid_file():
     assert "error" in data
     assert "code" in data["error"]
     assert "message" in data["error"]
+
 
 
 def test_ocr_response_structure():
@@ -239,3 +297,93 @@ def test_security_headers():
     assert response.headers["X-Content-Type-Options"] == "nosniff"
     assert response.headers["X-Frame-Options"] == "DENY"
     assert response.headers["Referrer-Policy"] == "no-referrer"
+
+
+def test_ocr_endpoint_invalid_image():
+    """
+    Verifica que un archivo que supera la validación
+    de seguridad pero no contiene una imagen válida
+    sea rechazado por la validación de imagen.
+    """
+
+    with patch(
+        "services.ocr_pipeline.validate_file_security",
+        return_value=(True, []),
+    ):
+        response = client.post(
+            "/api/v1/ocr",
+            files={
+                "file": (
+                    "corrupt.jpg",
+                    b"contenido que no es una imagen",
+                    "image/jpeg",
+                )
+            },
+        )
+
+    assert response.status_code == 400
+
+    data = response.json()
+
+    assert data["success"] is False
+    assert data["error"]["code"] == "INVALID_IMAGE"
+
+
+def test_ocr_endpoint_image_too_large():
+    """
+    Verifica que una imagen que supera las
+    restricciones de dimensiones sea rechazada.
+    """
+
+    image = create_test_image()
+
+    with patch(
+        "services.ocr_pipeline.validate_image_dimensions",
+        return_value=(
+            False,
+            ["Image exceeds maximum pixel limit"],
+        ),
+    ):
+        response = client.post(
+            "/api/v1/ocr",
+            files={
+                "file": (
+                    "large.jpg",
+                    image,
+                    "image/jpeg",
+                )
+            },
+        )
+
+    assert response.status_code == 413
+
+    data = response.json()
+
+    assert data["success"] is False
+    assert data["error"]["code"] == "IMAGE_TOO_LARGE"
+    assert "details" in data["error"]
+
+
+def test_ocr_endpoint_ocr_exception():
+    """
+    Verifica que una excepción durante OCR sea registrada
+    y propagada correctamente.
+    """
+
+    image = create_test_image()
+
+    with patch(
+        "services.ocr_pipeline.extract_text",
+        side_effect=RuntimeError("OCR failure"),
+    ):
+        with pytest.raises(RuntimeError, match="OCR failure"):
+            client.post(
+                "/api/v1/ocr",
+                files={
+                    "file": (
+                        "test.jpg",
+                        image,
+                        "image/jpeg",
+                    )
+                },
+            )
