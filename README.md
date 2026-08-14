@@ -834,7 +834,7 @@ El proyecto utiliza Pytest para validar el comportamiento del servicio.
 Actualmente se cuenta con:
 
 143 tests passed
-88% coverage
+96% coverage
 
 Los tests cubren diferentes áreas del sistema.
 
