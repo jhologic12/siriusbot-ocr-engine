@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 from app import app
 
 from utils.prometheus_metrics import (
+    register_ocr_error,
     register_ocr_processing_time,
     register_ocr_success,
     register_request,
@@ -74,3 +75,23 @@ def test_prometheus_request_metric_has_labels():
     assert 'method="POST"' in content
 
     assert 'path="/api/v1/ocr"' in content
+
+
+
+def test_prometheus_ocr_error_metric_has_error_type():
+    """
+    Verifica que los errores OCR
+    expongan el tipo de error.
+    """
+
+    register_ocr_error(
+        "INVALID_IMAGE",
+    )
+
+    response = client.get("/api/v1/metrics/prometheus")
+
+    content = response.text
+
+    assert "ocr_processing_errors_total" in content
+
+    assert 'error_type="INVALID_IMAGE"' in content

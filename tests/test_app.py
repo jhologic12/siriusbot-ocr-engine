@@ -387,3 +387,19 @@ def test_ocr_endpoint_ocr_exception():
                     )
                 },
             )
+
+    response = client.get(
+        "/api/v1/metrics/prometheus"
+    )
+
+    content = response.text
+
+    assert (
+        "ocr_processing_errors_total"
+        in content
+    )
+
+    assert (
+        'error_type="OCR_EXCEPTION"'
+        in content
+    )

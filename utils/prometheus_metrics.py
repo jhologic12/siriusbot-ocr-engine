@@ -47,6 +47,11 @@ OCR_FAILED = Counter(
     "Total de procesamientos OCR fallidos.",
 )
 
+OCR_ERRORS = Counter(
+    "ocr_processing_errors_total",
+    "Total de errores de procesamiento OCR por tipo.",
+    ["error_type"],
+)
 OCR_PROCESSING_DURATION = Histogram(
     "ocr_processing_duration_seconds",
     "Duración del procesamiento OCR en segundos.",
@@ -123,6 +128,17 @@ def register_ocr_failure():
     """
 
     OCR_FAILED.inc()
+
+def register_ocr_error(
+    error_type: str,
+):
+    """
+    Registra un error de procesamiento OCR por tipo.
+    """
+
+    OCR_ERRORS.labels(
+        error_type=error_type,
+    ).inc()
 
 
 def register_ocr_processing_time(

@@ -194,8 +194,6 @@ async def execute_ocr_pipeline(
 
     except Exception as error:
 
-        metrics.increment("ocr_failed")
-
         register_error("OCR_EXCEPTION")
         register_ocr_failure()
 

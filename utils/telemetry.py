@@ -5,6 +5,7 @@ del SiriusBot OCR Engine.
 
 from utils.metrics import metrics
 from utils.logger import get_logger
+from utils.prometheus_metrics import register_ocr_error
 
 logger = get_logger("telemetry")
 
@@ -41,6 +42,8 @@ def register_error(
     metrics.increment("ocr_failed")
 
     metrics.increment(error_type)
+
+    register_ocr_error(error_type)
 
     logger.error(
         f"ERROR {error_type}"
