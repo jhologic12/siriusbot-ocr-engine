@@ -94,10 +94,10 @@ Tesseract OCR Engine Mode.
 3 = Default automático.
 """
 
-OCR_PAGE_SEGMENT: int = 6
+OCR_PAGE_SEGMENT: int = 3
 """
 Tesseract Page Segmentation Mode.
-6 = Bloque uniforme de texto.
+3 = Segmentación automática de página.
 """
 
 OCR_CONFIG: str = (
