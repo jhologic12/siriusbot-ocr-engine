@@ -188,9 +188,6 @@ UPSCALE_WIDTH: int = 1200
 
 JPEG_QUALITY: int = 95
 
-SHARPNESS_FACTOR: float = 2.0
-
-CONTRAST_FACTOR: float = 1.8
 
 
 # ==========================

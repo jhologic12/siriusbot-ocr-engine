@@ -8,16 +8,12 @@ from io import BytesIO
 
 from PIL import (
     Image,
-    ImageEnhance,
-    ImageFilter,
     ImageOps,
 )
 
 from config import (
     UPSCALE_WIDTH,
     JPEG_QUALITY,
-    SHARPNESS_FACTOR,
-    CONTRAST_FACTOR,
 )
 
 
@@ -31,12 +27,10 @@ def preprocess_image(
 
     Pipeline:
 
-    1. Corrección EXIF
-    2. Conversión RGB
+    1. Corrección de orientación EXIF
+    2. Conversión a RGB
     3. Escalado
-    4. Mejora contraste
-    5. Mejora nitidez
-    6. Reducción de ruido
+    4. Conversión a escala de grises
 
     Returns:
         PIL.Image
@@ -91,41 +85,18 @@ def preprocess_image(
             Image.Resampling.LANCZOS,
         )
 
-
     # ==========================
-    # Mejora contraste
-    # ==========================
-
-    image = ImageEnhance.Contrast(
-        image
-    ).enhance(
-        CONTRAST_FACTOR
-    )
-
-
-    # ==========================
-    # Mejora nitidez
+    # Conversión a escala de grises
     # ==========================
 
-    image = ImageEnhance.Sharpness(
-        image
-    ).enhance(
-        SHARPNESS_FACTOR
-    )
-
-
-    # ==========================
-    # Reducción ruido
-    # ==========================
-
-    image = image.filter(
-        ImageFilter.MedianFilter(
-            size=3
-        )
+    image = image.convert(
+        "L"
     )
 
 
     return image
+
+
 
 
 

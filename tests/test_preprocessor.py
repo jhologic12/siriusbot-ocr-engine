@@ -27,7 +27,7 @@ def test_preprocess_image():
 
     assert isinstance(processed, Image.Image)
 
-    assert processed.mode == "RGB"
+    assert processed.mode == "L"
 
     assert processed.width >= original.width
 
@@ -66,7 +66,7 @@ def test_processed_image_can_be_opened():
 
     assert reconstructed.format == "JPEG"
 
-    assert reconstructed.mode == "RGB"
+    assert reconstructed.mode == "L"
 
     assert reconstructed.width == processed.width
 
