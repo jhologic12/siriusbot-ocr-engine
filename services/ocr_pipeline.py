@@ -168,21 +168,17 @@ async def execute_ocr_pipeline(
         register_success()
         register_ocr_success()
 
-        response = build_response(
-            validation=validation,
-            quality=quality,
-            processing=processing,
-            ocr=ocr_result,
-            message="Proceso completado",
-        )
-
-        data = response.model_dump(by_alias=True)
-
-        data["error"] = None
 
         return JSONResponse(
             status_code=200,
-            content=data,
+            content={
+                "success": True,
+                "ocr": {
+                    "text": ocr_result.text,
+                    "confidence": ocr_result.confidence,
+                },
+                "message": "Proceso completado",
+            },
         )
 
     except Exception as error:

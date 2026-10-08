@@ -147,19 +147,8 @@ def test_ocr_endpoint_with_valid_image():
     data = response.json()
 
     assert data["success"] is True
+    assert set(data.keys()) == {"success", "ocr", "message"}
 
-    assert data["validation"]["valid"] is True
-
-    assert "quality" in data
-    assert data["quality"]["canProcess"] is True
-
-    assert data["processing"]["processed"] is True
-    assert data["processing"]["originalSize"] > 0
-    assert data["processing"]["newSize"] > 0
-    assert data["processing"]["width"] > 0
-    assert data["processing"]["height"] > 0
-
-    assert "ocr" in data
     assert "text" in data["ocr"]
     assert "confidence" in data["ocr"]
 
@@ -273,12 +262,8 @@ def test_ocr_response_structure():
 
     expected_fields = {
         "success",
-        "validation",
-        "quality",
-        "processing",
         "ocr",
         "message",
-        "error",
     }
 
     assert expected_fields.issubset(data.keys())
