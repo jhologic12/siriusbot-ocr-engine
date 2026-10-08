@@ -84,7 +84,6 @@ async def execute_ocr_pipeline(
                     "error": {
                         "code": "FILE_SECURITY_ERROR",
                         "message": "Archivo rechazado por validación de seguridad",
-                        "details": security_errors,
                     },
                 },
             )
@@ -92,23 +91,17 @@ async def execute_ocr_pipeline(
         validation = validate_image(image_bytes)
 
         if not validation.valid:
-
             register_error("INVALID_IMAGE")
-
-            response = build_response(
-                validation=validation,
-                message="Imagen inválida",
-            )
-
-            data = response.model_dump(by_alias=True)
-
-            data["error"] = {
-                "code": "INVALID_IMAGE",
-            }
 
             return JSONResponse(
                 status_code=400,
-                content=data,
+                content={
+                    "success": False,
+                    "error": {
+                        "code": "INVALID_IMAGE",
+                        "message": "La imagen no es válida para procesamiento OCR.",
+                    },
+                },
             )
 
         image = Image.open(io.BytesIO(image_bytes))
@@ -125,7 +118,7 @@ async def execute_ocr_pipeline(
                     "success": False,
                     "error": {
                         "code": "IMAGE_TOO_LARGE",
-                        "details": image_errors,
+                        "message": "La imagen supera las dimensiones máximas permitidas.",
                     },
                 },
             )

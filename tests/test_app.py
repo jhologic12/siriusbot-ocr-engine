@@ -361,7 +361,7 @@ def test_ocr_endpoint_image_too_large():
 
     assert data["success"] is False
     assert data["error"]["code"] == "IMAGE_TOO_LARGE"
-    assert "details" in data["error"]
+    assert data["error"]["message"] == "La imagen supera las dimensiones máximas permitidas."
 
 
 def test_ocr_endpoint_ocr_exception():
