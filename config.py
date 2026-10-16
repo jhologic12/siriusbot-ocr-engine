@@ -82,6 +82,21 @@ if "*" in ALLOWED_HOSTS:
         "ALLOWED_HOSTS must not contain '*'"
     )
 
+
+# ==========================
+# API Authentication
+# ==========================
+
+OCR_API_KEY: str | None = (
+    os.getenv("OCR_API_KEY", "").strip() or None
+)
+
+if APP_ENV == "production" and not OCR_API_KEY:
+    raise ValueError(
+        "OCR_API_KEY must be explicitly configured in production"
+    )
+
+
 # ==========================
 # OCR
 # ==========================

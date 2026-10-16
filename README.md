@@ -515,8 +515,33 @@ multipart/form-data
 Ejemplo:
 
 curl -X POST \
+  -H "X-API-Key: TU_CLAVE_SECRETA" \
   -F "file=@factura.jpg" \
   http://localhost:8000/api/v1/ocr
+
+### Autenticación de la API
+
+En producción, configura la variable de entorno `OCR_API_KEY` con una clave secreta propia. La aplicación no iniciará si falta esta variable o está vacía.
+
+Las solicitudes a `POST /api/v1/ocr` deben incluir la cabecera:
+
+    X-API-Key: TU_CLAVE_SECRETA
+
+Si la clave falta o es incorrecta, la API responde con HTTP `401`. Los endpoints de salud permanecen públicos.
+
+En desarrollo y pruebas, la autenticación se exige únicamente cuando `OCR_API_KEY` está configurada.
+
+### Consumo desde n8n
+
+En el nodo HTTP Request, configura:
+
+- **Method:** `POST`.
+- **URL:** la dirección del servicio seguida de `/api/v1/ocr`.
+- **Header:** `X-API-Key`, con el valor de la clave configurada.
+- **Body Content Type:** `Form-Data`.
+- **Campo del archivo:** `file`, enviado como archivo binario.
+
+Guarda la clave en las credenciales o en la configuración segura de n8n. No la incluyas en la URL, el código fuente ni los archivos versionados.
 
 El procesamiento ejecuta las siguientes etapas:
 

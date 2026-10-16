@@ -19,6 +19,11 @@ def load_app(app_env: str, monkeypatch):
             "localhost,127.0.0.1,testserver",
         )
 
+        monkeypatch.setenv(
+            "OCR_API_KEY",
+            "test-only-secret",
+        )
+
     import config
     import app
 

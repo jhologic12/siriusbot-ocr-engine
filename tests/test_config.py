@@ -35,6 +35,11 @@ def test_valid_app_env(monkeypatch, value):
             "ocr.example.com",
         )
 
+        monkeypatch.setenv(
+            "OCR_API_KEY",
+            "test-only-secret",
+        )
+
     importlib.reload(config)
 
     assert config.APP_ENV == value
@@ -137,6 +142,18 @@ def test_production_requires_allowed_hosts(monkeypatch):
     with pytest.raises(
         ValueError,
         match="ALLOWED_HOSTS",
+    ):
+        importlib.reload(config)
+
+
+def test_production_requires_ocr_api_key(monkeypatch):
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("ALLOWED_HOSTS", "ocr.example.com")
+    monkeypatch.delenv("OCR_API_KEY", raising=False)
+
+    with pytest.raises(
+        ValueError,
+        match="OCR_API_KEY",
     ):
         importlib.reload(config)
 
